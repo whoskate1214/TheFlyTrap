@@ -10,37 +10,38 @@ import {
   Text,
   VStack,
 } from "@chakra-ui/react";
+import tweetsData from "./data/tweets.json"
+import type { Tweet } from "./types/tweet"
+import { useState } from "react";
 
 function App() {
-  const tweets = [
-  {
-    "name": "Maya Johnson",
-    "username": "@maya_codes",
-    "createdAt": "2026-05-03T09:58:00.000Z",
-    "text": "Just got my first React page running. Components are starting to make sense.",
-    "likes": 14,
-    "replies": 3,
-    "tag": "Web Dev"
-  },
-  {
-    "name": "Ethan Brooks",
-    "username": "@ethanbuilds",
-    "createdAt": "2026-05-02T09:48:00.000Z",
-    "text": "Hardcoding data first helps me focus on the page layout before adding real input.",
-    "likes": 22,
-    "replies": 5,
-    "tag": "React"
-  },
-  {
-    "name": "Ava Smith",
-    "username": "@ava_secure",
-    "createdAt": "2026-05-01T09:35:00.000Z",
-    "text": "A .map() lets us turn an array of data into repeated cards on the screen.",
-    "likes": 31,
-    "replies": 8,
-    "tag": "Cyber 301"
+  // Tweets is the current list of tweets shown
+  // set tweets is how React updates all instances
+  // We are starting with tweets from json file
+  const [tweets, setTweets] = useState<Tweet[]>(tweetsData as Tweet[])
+
+  // input is what is typed in the box, setInput is how we update it
+  const [input, setInput] = useState("");
+
+  // function to run when user clicks yap button
+  const handleYapClick = () => {
+    // if input is empty or white space, end function
+    if(!input.trim()) return;
+    const newTweet: Tweet = {
+      id: Date.now(),
+      name: "JoeSmoe",
+      username: "@you",
+      createdAt: new Date().toISOString(),
+      text: input.trim(),
+      likes: 0,
+      replies: 0,
+      tag: ""
+    };
+    // Puts new tweet first, then copy in old tweets
+    setTweets([newTweet, ...tweets]);
+    // clear input box after posting
+    setInput("")
   }
-];
 
   // Save the current time once during this render.
   const currentTime = new Date().toISOString();
@@ -83,8 +84,12 @@ function App() {
                 bg="gray.700"
                 borderColor="gray.600"
                 color="white"
+                value={input}
+                onChange={(userInput) => setInput(userInput.target.value)}
               />
-              <Button alignSelf="flex-end" bg="blue.500" color="white">
+              <Button alignSelf="flex-end" bg="blue.500" color="white"
+                onClick={handleYapClick}
+              >
                 Yap
               </Button>
             </VStack>
