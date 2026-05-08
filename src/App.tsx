@@ -10,19 +10,33 @@ import {
   Text,
   VStack,
 } from "@chakra-ui/react";
-import tweetsData from "./data/tweets.json"
+import React, { useEffect, useState } from "react";
 import type { Tweet } from "./types/Tweet"
 import { useState } from "react";
+import { supabase } from "./utils/supabase";
 
 function App() {
   // Tweets is the current list of tweets shown
   // set tweets is how React updates all instances
-  // We are starting with tweets from json file
-  const [tweets, setTweets] = useState<Tweet[]>(tweetsData as Tweet[])
+  // We are starting with tweets from json file 
+const [tweets, setTweets] = useState<Tweet[]>([]);
 
   // input is what is typed in the box, setInput is how we update it
   const [input, setInput] = useState("");
 
+useEffect(() => {
+  async function load() {
+    const { data, error } = await supabase
+      .from("tweets")
+      .select("*")
+      .order("created_at", { ascending: false });
+
+    if (error) console.error(error);
+    else setTweets(data || []);
+  }
+
+  load();
+}, []);
   // function to run when user clicks yap button
   const handleYapClick = () => {
     // if input is empty or white space, end function
